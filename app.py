@@ -203,10 +203,10 @@ def register():
 
         if request.method == 'POST':
 
-        username = request.form['username']
+             username = request.form['username']
 
-        password = generate_password_hash(
-            request.form['password']
+             password = generate_password_hash(
+             request.form['password']
         )
 
         existing = User.query.filter_by(
@@ -408,14 +408,14 @@ def search():
 
     if len(user_requests[current_user.id]) > 8:
 
-        log_abuse(
+         log_abuse(
             current_user.id,
             "High request frequency"
         )
 
     if is_rate_limited(current_user.id):
 
-        return "Too many requests. Slow down.", 429
+         return "Too many requests. Slow down.", 429
 
     username = current_user.username
 
@@ -542,11 +542,11 @@ def download_report():
 ).first()
 
     if not payment:
-    return redirect('/pay')
-    user_dir = os.path.join(BASE_DIR, current_user.username)
+        return redirect('/pay')
+         user_dir = os.path.join(BASE_DIR, current_user.username)
 
-    files = sorted(os.listdir(user_dir))
-    pdf_files = [f for f in files if f.endswith(".pdf")]
+          files = sorted(os.listdir(user_dir))
+          pdf_files = [f for f in files if f.endswith(".pdf")]
 
     if not pdf_files:
         return "No PDF reports found", 404
@@ -599,7 +599,7 @@ def subscribe(plan):
 @login_required
 def admin():
     if current_user.role != "admin":
-        return "Access denied", 403
+         return "Access denied", 403
     total_users = User.query.count()
 
     total_payments = Payment.query.filter_by(status="success").count()
@@ -633,7 +633,7 @@ def abuse_dashboard():
 @app.route('/search')
 def search():
     ...
-if __name__ == "__main__":
+  if __name__ == "__main__":
 
     with app.app_context():
         db.create_all()
