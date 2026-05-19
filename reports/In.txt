@@ -1,0 +1,2 @@
+Did you run Sherlock with `python3 sherlock/sherlock.py ...`?
+This is an outdated method. Please see https://sherlockproject.xyz/installation for up to date instructions.

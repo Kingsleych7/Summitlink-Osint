@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Result</title>
+
+    <style>
+        body{
+            background:#0f172a;
+            color:white;
+            font-family:Arial;
+            padding:20px;
+        }
+
+        .container{
+            max-width:900px;
+            margin:auto;
+        }
+
+        textarea{
+            width:100%;
+            height:500px;
+            background:#111827;
+            color:#22c55e;
+            border:none;
+            padding:15px;
+            border-radius:10px;
+        }
+
+        .btn{
+            background:#2563eb;
+            color:white;
+            padding:10px 20px;
+            text-decoration:none;
+            border-radius:8px;
+        }
+
+        h1{
+            color:#38bdf8;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>OSINT Result for {{ username }}</h1>
+
+<p>Report saved at: {{ report }}</p>
+
+<textarea readonly>{{ output }}</textarea>
+
+<br><br>
+
+<a class="btn" href="/download/{{ username }}">
+    Download PDF Report
+</a>
+<a class="btn" href="/dashboard">Back to Dashboard</a>
+
+</div>
+
+</body>
+</html>

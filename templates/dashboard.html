@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <style>
+        body {
+            background: #111827;
+            color: white;
+            font-family: Arial;
+            padding: 40px;
+        }
+
+        input {
+            padding: 10px;
+            width: 300px;
+        }
+
+        button {
+            padding: 10px 15px;
+            background: #2563eb;
+            color: white;
+            border: none;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+
+<div class="top">
+    <h1>Welcome, {{ username }}</h1>
+    <a href="/logout" style="color:red;">Logout</a>
+</div>
+
+<h2>Username Intelligence Search</h2>
+
+<form action="/search" method="POST">
+    <input type="text" name="username" placeholder="Enter username" required>
+    <button type="submit">Search</button>
+</form>
+<hr><br>
+
+<h2>Your Search History</h2>
+
+{% for item in searches %}
+
+<div style="background:#1f2937;padding:15px;margin-bottom:10px;border-radius:8px;">
+
+<strong>{{ item.searched_username }}</strong><br>
+
+<small>{{ item.created_at }}</small><br><br>
+
+<a href="/generate-pdf/{{ item.searched_username }}"
+style="color:cyan;">
+Download PDF
+</a>
+
+</div>
+
+{% endfor %}
+</body>
+</html>

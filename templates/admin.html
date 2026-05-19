@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Summitlink Admin</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<h1>Admin Dashboard</h1>
+
+<h3>Total Users: {{ total_users }}</h3>
+<h3>Total Payments: {{ total_payments }}</h3>
+<h3>Total Revenue: ₦{{ revenue }}</h3>
+
+<hr>
+
+<canvas id="userChart"></canvas>
+<canvas id="roleChart"></canvas>
+
+<script>
+    // Convert Flask variables to JS-safe numbers
+    const totalUsers = {{ total_users }};
+    const totalPayments = {{ total_payments }};
+    const revenue = {{ revenue }};
+
+    const freeUsers = {{ free_users }};
+    const proUsers = {{ pro_users }};
+    const adminUsers = {{ admin_users }};
+
+    // 📊 USER METRICS CHART
+    new Chart(document.getElementById('userChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Users', 'Payments'],
+            datasets: [{
+                label: 'System Stats',
+                data: [totalUsers, totalPayments]
+            }]
+        }
+    });
+
+    // 📊 ROLE DISTRIBUTION CHART
+    new Chart(document.getElementById('roleChart'), {
+        type: 'pie',
+        data: {
+            labels: ['Free', 'Pro', 'Admin'],
+            datasets: [{
+                data: [freeUsers, proUsers, adminUsers]
+            }]
+        }
+    });
+</script>
+
+</body>
+</html>
