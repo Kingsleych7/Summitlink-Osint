@@ -35,6 +35,10 @@ import time
 from collections import defaultdict
 from flask import request
 from flask import redirect
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
+limiter = Limiter(get_remote_address, app=app)
 ip_log = defaultdict(list)
 
 user_requests = defaultdict(list)
@@ -54,7 +58,7 @@ PAYSTACK_PUBLIC_KEY = os.getenv("PAYSTACK_PUBLIC_KEY")
 BASE_DIR = os.path.abspath("reports")
 
 app.config['SECRET_KEY'] = 'summitlink-secret'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////data/data/com.termux/files/home/summitlink-osint-platform/database/users.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 PLANS = {
@@ -594,9 +598,9 @@ def subscribe(plan):
     )
 @app.route('/admin')
 @login_required
-@admin_required
-def admin_dashboard():
-
+def admin():
+    if current_user.role != "admin":
+        return "Access denied", 403
     total_users = User.query.count()
 
     total_payments = Payment.query.filter_by(status="success").count()
@@ -626,9 +630,13 @@ def abuse_dashboard():
     logs = AbuseLog.query.order_by(AbuseLog.id.desc()).limit(50).all()
 
     return render_template("abuse.html", logs=logs)
-
+@limiter.limit("10 per minute")
+@app.route('/search')
+def search():
+    ...
 if __name__ == "__main__":
+
     with app.app_context():
         db.create_all()
 
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)
