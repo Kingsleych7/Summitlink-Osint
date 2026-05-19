@@ -201,12 +201,12 @@ def test():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
 
-        if request.method == 'POST':
+    if request.method == 'POST':
 
-             username = request.form['username']
+        username = request.form['username']
 
-             password = generate_password_hash(
-             request.form['password']
+        password = generate_password_hash(
+            request.form['password']
         )
 
         existing = User.query.filter_by(
@@ -214,7 +214,6 @@ def register():
         ).first()
 
         if existing:
-
             return "User already exists"
 
         user = User(
@@ -223,7 +222,6 @@ def register():
         )
 
         db.session.add(user)
-
         db.session.commit()
 
         subscription = Subscription(
@@ -233,16 +231,13 @@ def register():
         )
 
         db.session.add(subscription)
-
         db.session.commit()
 
         return redirect(
             url_for('login')
         )
 
-    return render_template(
-        'register.html'
-    )
+    return render_template('register.html')
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 
@@ -254,7 +249,11 @@ def login():
         user = User.query.filter_by(
             username=username
         ).first()
-     if user and check_password_hash(user.password, password):
+
+        if user and check_password_hash(
+            user.password,
+            password
+        ):
 
             login_user(user)
 
@@ -291,17 +290,18 @@ def dashboard():
             </a>
 
         </div>
-    subscription = Subscription.query.filter_by(
+        """
+subscription = Subscription.query.filter_by(
     user_id=current_user.id
-).first()    """
+).first()
 
-    return f'''
-    <!DOCTYPE html>
-    <html>
+return f'''
+<!DOCTYPE html>
+<html>
 
-    <head>
+<head>
 
-    <title>Dashboard</title>
+<title>Dashboard</title>
 
     <style>
 
@@ -504,7 +504,7 @@ def paystack_webhook():
 
     event = payload.get('event')
 
-   if event == "charge.success":
+    if event == "charge.success":
 
         data = payload['data']
 
@@ -512,13 +512,14 @@ def paystack_webhook():
         amount = data['amount']
         email = data['customer']['email']
 
-        # 🔥 fraud check (must be inside function AND after data exists)
-    if amount not in [200000, 500000]:
+        # fraud check
+        if amount not in [200000, 500000]:
             log_abuse(email, "Invalid payment amount detected")
             return "Invalid amount", 400
 
         user = User.query.filter_by(email=email).first()
-    if user:
+
+        if user:
 
             payment = Payment(
                 user_id=user.id,
@@ -531,7 +532,6 @@ def paystack_webhook():
             db.session.commit()
 
     return "OK", 200
-
 @app.route('/download')
 @login_required
 def download_report():
@@ -542,14 +542,21 @@ def download_report():
 ).first()
 
     if not payment:
-        return redirect('/pay')
-         user_dir = os.path.join(BASE_DIR, current_user.username)
+    return redirect('/pay')
 
-          files = sorted(os.listdir(user_dir))
-          pdf_files = [f for f in files if f.endswith(".pdf")]
+user_dir = os.path.join(
+    BASE_DIR,
+    current_user.username
+)
 
-    if not pdf_files:
-        return "No PDF reports found", 404
+files = sorted(os.listdir(user_dir))
+
+pdf_files = [
+    f for f in files if f.endswith(".pdf")
+]
+
+if not pdf_files:
+    return "No PDF reports found", 404
 
     latest_pdf = pdf_files[-1]
     pdf_path = os.path.join(user_dir, latest_pdf)
@@ -626,13 +633,15 @@ def admin():
 @admin_required
 def abuse_dashboard():
 
-    logs = AbuseLog.query.order_by(AbuseLog.id.desc()).limit(50).all()
+    logs = AbuseLog.query.order_by(
+        AbuseLog.id.desc()
+    ).limit(50).all()
 
-    return render_template("abuse.html", logs=logs)
-@limiter.limit("10 per minute")
-@app.route('/search')
-def search():
-    ...
+    return render_template(
+        "abuse.html",
+        logs=logs
+    )
+
   if __name__ == "__main__":
 
     with app.app_context():
