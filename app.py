@@ -201,7 +201,7 @@ def test():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
 
-    if request.method == 'POST':
+        if request.method == 'POST':
 
         username = request.form['username']
 
@@ -254,8 +254,7 @@ def login():
         user = User.query.filter_by(
             username=username
         ).first()
-
-        if user and check_password_hash(user.password, password):
+     if user and check_password_hash(user.password, password):
 
             login_user(user)
 
@@ -505,7 +504,7 @@ def paystack_webhook():
 
     event = payload.get('event')
 
-    if event == "charge.success":
+   if event == "charge.success":
 
         data = payload['data']
 
@@ -514,13 +513,12 @@ def paystack_webhook():
         email = data['customer']['email']
 
         # 🔥 fraud check (must be inside function AND after data exists)
-        if amount not in [200000, 500000]:
+    if amount not in [200000, 500000]:
             log_abuse(email, "Invalid payment amount detected")
             return "Invalid amount", 400
 
         user = User.query.filter_by(email=email).first()
-
-        if user:
+    if user:
 
             payment = Payment(
                 user_id=user.id,
@@ -543,7 +541,7 @@ def download_report():
     status="success"
 ).first()
 
-if not payment:
+    if not payment:
     return redirect('/pay')
     user_dir = os.path.join(BASE_DIR, current_user.username)
 
@@ -579,7 +577,7 @@ def subscribe(plan):
         "metadata": {
             "plan": plan
         },
-        "callback_url": "https://your-render-app.onrender.com/verify"
+        "callback_url": "https://summitlink-osint-cybercommand.onrender.com/verify"
     }
 
     headers = {
