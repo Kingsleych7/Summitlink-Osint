@@ -560,7 +560,8 @@ if not payment:
 @app.route('/subscribe/<plan>')
 @login_required
 def subscribe(plan):
-    # 🔥 Prevent duplicate subscriptions
+
+    # prevent duplicate subscriptions
     if has_active_subscription(current_user):
         return "Already subscribed", 403
 
@@ -578,7 +579,7 @@ def subscribe(plan):
         "metadata": {
             "plan": plan
         },
-        "callback_url": "http://127.0.0.1:5000/verify"
+        "callback_url": "https://your-render-app.onrender.com/verify"
     }
 
     headers = {
