@@ -1,66 +1,60 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
-from extensions import db
-from models import User
-from flask_login import LoginManager, login_user, login_required, logout_user, current_user
-from werkzeug.security import generate_password_hash, check_password_hash
-import subprocess
-import time
-import os
-from flask_login import login_required, current_user
-from models import db, User, SearchHistory
-from models import (
-    db,
-    User,
-    SearchHistory,
-    Subscription
-)
-from reportlab.platypus import (
-    SimpleDocTemplate,
-    Paragraph,
-    Spacer
-)
-from functools import wraps
-from flask import abort
-from dotenv import load_dotenv
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
-from functools import wraps
-from flask import abort
-from flask import send_file
-from xml.sax.saxutils import escape
-import requests
-import time
-from collections import defaultdict
-from flask import request
-from flask import redirect
+from flask import Flask, render_template, request, redirect, url_for, flash, abort, send_file
+from flask_login import login_user, login_required, logout_user, current_user
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from werkzeug.security import generate_password_hash, check_password_hash
+from dotenv import load_dotenv
+from collections import defaultdict
 
-limiter = Limiter(get_remote_address, app=app)
-ip_log = defaultdict(list)
+from extensions import db
+from models import User, SearchHistory, Subscription
 
-user_requests = defaultdict(list)
+import os
+import requests
+import time
+import subprocess
 
-MAX_REQUESTS = 10
-TIME_WINDOW = 60  # seconds
-
+# -------------------------
+# LOAD ENV
+# -------------------------
 load_dotenv()
 
+# -------------------------
+# APP INIT
+# -------------------------
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
-
-PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY")
-
-PAYSTACK_PUBLIC_KEY = os.getenv("PAYSTACK_PUBLIC_KEY")
-BASE_DIR = os.path.abspath("reports")
-
-app.config['SECRET_KEY'] = 'summitlink-secret'
+app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "dev-secret")
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# -------------------------
+# DB INIT (IMPORTANT)
+# -------------------------
+db.init_app(app)
+
+# -------------------------
+# RATE LIMITER (SAFE INIT)
+# -------------------------
+limiter = Limiter(key_func=get_remote_address)
+limiter.init_app(app)
+
+# -------------------------
+# GLOBALS
+# -------------------------
+user_requests = defaultdict(list)
+ip_log = defaultdict(list)
+
+MAX_REQUESTS = 10
+TIME_WINDOW = 60
+
+# -------------------------
+# PAYSTACK
+# -------------------------
+PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY")
+PAYSTACK_PUBLIC_KEY = os.getenv("PAYSTACK_PUBLIC_KEY")
+
+BASE_DIR = os.path.abspath("reports")
 PLANS = {
     "BASIC": {
         "price": 2000,
