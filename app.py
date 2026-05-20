@@ -279,22 +279,7 @@ def dashboard():
         'dashboard.html',
         searches=searches,
         subscription=subscription
-    ) ):
-
-            login_user(user)
-
-            return redirect(
-                url_for('dashboard')
-            )
-
-        return "Invalid credentials"
-
-    return render_template(
-    'dashboard.html',
-    searches=searches,
-    subscription=subscription
-)
-
+    )
 @app.route('/logout')
 @login_required
 def logout():
@@ -435,31 +420,38 @@ def paystack_webhook():
 def download_report():
 
     payment = Payment.query.filter_by(
-    user_id=current_user.id,
-    status="success"
-).first()
+        user_id=current_user.id,
+        status="success"
+    ).first()
 
     if not payment:
-    return redirect('/pay')
+        return redirect('/pay')
 
-user_dir = os.path.join(
-    BASE_DIR,
-    current_user.username
-)
+    user_dir = os.path.join(
+        BASE_DIR,
+        current_user.username
+    )
 
-files = sorted(os.listdir(user_dir))
+    files = sorted(os.listdir(user_dir))
 
-pdf_files = [
-    f for f in files if f.endswith(".pdf")
-]
+    pdf_files = [
+        f for f in files if f.endswith(".pdf")
+    ]
 
-if not pdf_files:
-    return "No PDF reports found", 404
+    if not pdf_files:
+        return "No PDF reports found", 404
 
     latest_pdf = pdf_files[-1]
-    pdf_path = os.path.join(user_dir, latest_pdf)
 
-    return send_file(pdf_path, as_attachment=True)
+    pdf_path = os.path.join(
+        user_dir,
+        latest_pdf
+    )
+
+    return send_file(
+        pdf_path,
+        as_attachment=True
+    )
 @app.route('/subscribe/<plan>')
 @login_required
 def subscribe(plan):
@@ -540,7 +532,8 @@ def abuse_dashboard():
         logs=logs
     )
 
-  if __name__ == "__main__":
+
+if __name__ == "__main__":
 
     with app.app_context():
         db.create_all()
