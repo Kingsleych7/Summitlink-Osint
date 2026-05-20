@@ -250,10 +250,18 @@ def login():
             username=username
         ).first()
 
-        if user and check_password_hash(
-            user.password,
-            password
-       @app.route('/dashboard')
+        if user and check_password_hash(user.password, password):
+
+            login_user(user)
+
+            return redirect(
+                url_for('dashboard')
+            )
+
+        return "Invalid credentials"
+
+    return render_template('login.html')
+@app.route('/dashboard')
 @login_required
 def dashboard():
 
@@ -281,13 +289,12 @@ def dashboard():
 
         return "Invalid credentials"
 
-    return render_template('login.html')
+    return render_template(
+    'dashboard.html',
+    searches=searches,
+    subscription=subscription
+)
 
-subscription = Subscription.query.filter_by(
-    user_id=current_user.id
-).first()
-
-return f'
 @app.route('/logout')
 @login_required
 def logout():
