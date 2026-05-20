@@ -29,7 +29,8 @@ app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "dev-secret")
 database_url = os.getenv("DATABASE_URL")
 
 if not database_url:
-    raise Exception("DATABASE_URL is not set")
+    print("WARNING: DATABASE_URL not set, using SQLite fallback")
+    database_url = "sqlite:///app.db"
 
 # Render/Postgres fix
 if database_url.startswith("postgres://"):
