@@ -253,7 +253,25 @@ def login():
         if user and check_password_hash(
             user.password,
             password
-        ):
+       @app.route('/dashboard')
+@login_required
+def dashboard():
+
+    searches = SearchHistory.query.filter_by(
+        user_id=current_user.id
+    ).order_by(
+        SearchHistory.created_at.desc()
+    ).all()
+
+    subscription = Subscription.query.filter_by(
+        user_id=current_user.id
+    ).first()
+
+    return render_template(
+        'dashboard.html',
+        searches=searches,
+        subscription=subscription
+    ) ):
 
             login_user(user)
 
@@ -264,139 +282,12 @@ def login():
         return "Invalid credentials"
 
     return render_template('login.html')
-@app.route('/dashboard')
-@login_required
-def dashboard():
 
-    searches = SearchHistory.query.filter_by(
-        user_id=current_user.id
-    ).order_by(
-        SearchHistory.created_at.desc()
-    ).all()
-
-    history_html = ""
-
-    for item in searches:
-
-        history_html += f"""
-        <div class='history-card'>
-
-            <h3>{item.searched_username}</h3>
-
-            <p>{item.created_at}</p>
-
-            <a href='/{item.result_file}'>
-                View Report
-            </a>
-
-        </div>
-        """
 subscription = Subscription.query.filter_by(
     user_id=current_user.id
 ).first()
 
-return f'''
-<!DOCTYPE html>
-<html>
-
-<head>
-
-<title>Dashboard</title>
-
-    <style>
-
-    body{{
-        background:#0f172a;
-        color:white;
-        font-family:Arial;
-        padding:30px;
-    }}
-
-    .box{{
-        max-width:900px;
-        margin:auto;
-    }}
-
-    .search-box{{
-        background:#1e293b;
-        padding:25px;
-        border-radius:15px;
-    }}
-
-    input{{
-        width:100%;
-        padding:12px;
-        border:none;
-        border-radius:8px;
-    }}
-
-    button{{
-        margin-top:15px;
-        padding:12px 20px;
-        background:#2563eb;
-        color:white;
-        border:none;
-        border-radius:8px;
-        cursor:pointer;
-    }}
-
-    .history-card{{
-        background:#111827;
-        padding:20px;
-        margin-top:15px;
-        border-radius:12px;
-    }}
-
-    a{{
-        color:#38bdf8;
-        text-decoration:none;
-    }}
-
-    </style>
-
-    </head>
-
-    <body>
-
-    <div class="box">
-
-        <div class="search-box">
-
-            <h1>Welcome {current_user.username}</h1>
-
-            <p>
-Plan: {subscription.plan.upper()}
-<br>
-Searches Left: {subscription.searches_left}
-</p>
-
-            <form method="POST" action="/search">
-
-                <input
-                    name="username"
-                    placeholder="Enter username..."
-                    required
-                >
-
-                <button type="submit">
-                    Search OSINT
-                </button>
-
-            </form>
-
-        </div>
-
-        <h2 style="margin-top:40px;">
-            Search History
-        </h2>
-
-        {history_html}
-
-    </div>
-
-    </body>
-    </html>
-    '''
+return f'
 @app.route('/logout')
 @login_required
 def logout():

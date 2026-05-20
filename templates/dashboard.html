@@ -1,65 +1,85 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+
     <title>Dashboard</title>
+
     <style>
-        body {
-            background: #111827;
-            color: white;
+
+        body{
             font-family: Arial;
-            padding: 40px;
+            background:#0f172a;
+            color:white;
+            padding:20px;
         }
 
-        input {
-            padding: 10px;
-            width: 300px;
+        .card{
+            background:#1e293b;
+            padding:15px;
+            margin-bottom:15px;
+            border-radius:10px;
         }
 
-        button {
-            padding: 10px 15px;
-            background: #2563eb;
-            color: white;
-            border: none;
+        a{
+            color:#38bdf8;
+            text-decoration:none;
         }
 
-        .top {
-            display: flex;
-            justify-content: space-between;
-        }
     </style>
+
 </head>
+
 <body>
 
-<div class="top">
-    <h1>Welcome, {{ username }}</h1>
-    <a href="/logout" style="color:red;">Logout</a>
-</div>
+    <h1>Summitlink Dashboard</h1>
 
-<h2>Username Intelligence Search</h2>
+    <div class="card">
+        <h2>User Info</h2>
 
-<form action="/search" method="POST">
-    <input type="text" name="username" placeholder="Enter username" required>
-    <button type="submit">Search</button>
-</form>
-<hr><br>
+        <p><strong>Username:</strong> {{ current_user.username }}</p>
 
-<h2>Your Search History</h2>
+        <p><strong>Role:</strong> {{ current_user.role }}</p>
 
-{% for item in searches %}
+        <p><strong>Plan:</strong>
+            {% if subscription %}
+                {{ subscription.plan }}
+            {% else %}
+                Free
+            {% endif %}
+        </p>
+    </div>
 
-<div style="background:#1f2937;padding:15px;margin-bottom:10px;border-radius:8px;">
+    <div class="card">
 
-<strong>{{ item.searched_username }}</strong><br>
+        <h2>Search History</h2>
 
-<small>{{ item.created_at }}</small><br><br>
+        {% for item in searches %}
 
-<a href="/generate-pdf/{{ item.searched_username }}"
-style="color:cyan;">
-Download PDF
-</a>
+            <div>
 
-</div>
+                <h3>{{ item.searched_username }}</h3>
 
-{% endfor %}
+                <p>{{ item.created_at }}</p>
+
+                <a href="/{{ item.result_file }}">
+                    View Report
+                </a>
+
+            </div>
+
+            <hr>
+
+        {% endfor %}
+
+    </div>
+
+    <div class="card">
+
+        <a href="/logout">Logout</a>
+
+    </div>
+
 </body>
+
 </html>
