@@ -120,9 +120,6 @@ def track_ip(user_id):
 
     if len(ip_log[ip]) > 20:
         log_abuse(user_id, "IP suspicious activity")
-# INIT DATABASE
-db.init_app(app)
-
 #INIT LOGIN MANAGER (IMPORTANT FIX)
 login_manager = LoginManager()
 login_manager.init_app(app)
