@@ -5,6 +5,7 @@ from flask_limiter.util import get_remote_address
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 from collections import defaultdict
+from functools import wraps
 
 from extensions import db, login_manager
 from models import User, SearchHistory, Subscription
