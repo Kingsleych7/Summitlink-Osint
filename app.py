@@ -1,12 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, abort, send_file
-from flask_login import login_user, login_required, logout_user, current_user
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 from collections import defaultdict
 
-from extensions import db
+from extensions import db, login_manager
 from models import User, SearchHistory, Subscription
 
 import os
@@ -121,7 +121,6 @@ def track_ip(user_id):
     if len(ip_log[ip]) > 20:
         log_abuse(user_id, "IP suspicious activity")
 #INIT LOGIN MANAGER (IMPORTANT FIX)
-login_manager = LoginManager()
 login_manager.init_app(app)
 
 login_manager.login_view = "login"
